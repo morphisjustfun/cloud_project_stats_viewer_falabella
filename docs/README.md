@@ -1,4 +1,4 @@
-# Proyecto de Cloud Computing - Convex Hull Reborned
+# Proyecto de Cloud Computing - Plataforma para el seguimiento de precios de celulares en Falabella
 
 ## Integrantes
 
