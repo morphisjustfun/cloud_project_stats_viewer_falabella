@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: main-etl
+spec:
+  schedule: "@daily"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: my-python-app
+              image: us-central1-docker.pkg.dev/curious-ocean-424202-i9/main-etl-tracky/main-etl-tracky:latest
+              command: [ "python", "main.py" ]
+              resources:
+                requests:
+                  memory: "512Mi"
+                  cpu: "500m"
+                limits:
+                  memory: "1Gi"
+                  cpu: "1000m"
+              env:
+                - name: DB_USER
+                  value: "default"
+                - name: DB_PASSWORD
+                  value: "default"
+                - name: DB_HOST
+                  value: "default"
+                - name: DB_PORT
+                  value: "5432"
+                - name: DB_NAME
+                  value: "default"
+          restartPolicy: OnFailure
