@@ -9,7 +9,7 @@ spec:
       template:
         spec:
           containers:
-            - name: my-python-app
+            - name: etl
               image: us-central1-docker.pkg.dev/curious-ocean-424202-i9/main-etl-tracky/main-etl-tracky:latest
               command: [ "python", "main.py" ]
               resources:
