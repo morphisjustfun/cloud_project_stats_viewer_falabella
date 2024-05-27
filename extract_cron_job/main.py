@@ -109,7 +109,7 @@ def run_falabella():
     def upload(df):
         logger.info('Starting upload')
         connection_string = f'postgresql://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}'
-        time = pendulum.now(tz='America/Lima')
+        time = pendulum.now(tz='America/Lima').format('YYYY-MM-DD')
         df['time'] = time
         df['provider'] = 'falabella'
         df.set_index('product_id', inplace=True)
@@ -200,7 +200,7 @@ def run_entel():
     def upload(df):
         logger.info('Starting upload')
         connection_string = f'postgresql://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT")}/{os.getenv("DB_NAME")}'
-        time = pendulum.now(tz='America/Lima')
+        time = pendulum.now(tz='America/Lima').format('YYYY-MM-DD')
         df['time'] = time
         df['provider'] = 'entel'
         df.set_index('product_id', inplace=True)

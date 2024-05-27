@@ -21,13 +21,28 @@ spec:
                   cpu: "1000m"
               env:
                 - name: DB_USER
-                  value: "default"
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: username
                 - name: DB_PASSWORD
-                  value: "default"
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: password
                 - name: DB_HOST
-                  value: "default"
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: host
                 - name: DB_PORT
-                  value: "5432"
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: port
                 - name: DB_NAME
-                  value: "default"
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: database
           restartPolicy: OnFailure
