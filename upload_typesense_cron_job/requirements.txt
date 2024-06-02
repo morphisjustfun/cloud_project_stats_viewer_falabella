@@ -16,4 +16,4 @@ time-machine==2.14.1
 typing_extensions==4.11.0
 tzdata==2024.1
 urllib3==2.2.1
-beautifulsoup4==4.12.3
+typesense==0.21.0

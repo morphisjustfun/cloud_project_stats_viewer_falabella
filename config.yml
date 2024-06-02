@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  search_host: "34.149.0.171"
+  search_port: "80"
+  search_key: "uGmYS0l54MFa8NZpTw1wDPIipKgAVAE5"

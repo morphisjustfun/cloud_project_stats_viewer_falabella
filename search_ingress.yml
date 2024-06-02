@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: search-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: search-ip
+spec:
+  defaultBackend:
+    service:
+      name: search-service
+      port:
+        number: 80

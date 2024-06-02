@@ -1,0 +1,64 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: upload-search
+spec:
+  schedule: "@daily"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: etl
+              image: us-central1-docker.pkg.dev/curious-ocean-424202-i9/main-etl-tracky/upload-search:latest
+              command: [ "python", "main.py" ]
+              resources:
+                requests:
+                  memory: "512Mi"
+                  cpu: "500m"
+                limits:
+                  memory: "1Gi"
+                  cpu: "1000m"
+              env:
+                - name: DB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: username
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: password
+                - name: DB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: host
+                - name: DB_PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: port
+                - name: DB_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: database
+                - name: TYPESENSE_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: app-config
+                      key: search_host
+                - name: TYPESENSE_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: app-config
+                      key: search_port
+                - name: TYPESENSE_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: typesense-key
+                      key: api-key
+
+          restartPolicy: OnFailure

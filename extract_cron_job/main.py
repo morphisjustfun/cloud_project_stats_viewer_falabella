@@ -6,10 +6,30 @@ import pendulum
 from dotenv import load_dotenv
 import os
 import logging
+import bs4
+import json
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 logger.setLevel(logging.INFO)
+
+
+def find_key(obj, key, values):
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if k == key:
+                values.append(v)
+            if isinstance(v, dict):
+                find_key(v, key, values)
+            elif isinstance(v, list):
+                for item in v:
+                    find_key(item, key, values)
+
+
+def find_key_helper(obj, key):
+    values = []
+    find_key(obj, key, values)
+    return values
 
 
 def run_falabella():
@@ -21,6 +41,21 @@ def run_falabella():
         pg_id = '2'
         category_name = 'Celulares-y-Telefonos'
         zones = 'IBIS_51%2CPPE3342%2CPPE3361%2CPPE1112%2CPPE3384%2C912_LIMA_2%2CPPE1280%2C150000%2CPPE4%2C912_LIMA_1%2CPPE1279%2C150101%2CPPE344%2CPPE3059%2CPPE2492%2CIMP_2%2CPPE3331%2CPPE3357%2CPPE1091%2CPERF_TEST%2CPPE1653%2CPPE2486%2COLVAA_81%2CPPE2815%2CIMP_1%2CPPE3164%2CPPE2918%2CURBANO_83%2CPPE2429%2CPPE3152%2CPPE3479%2CPPE3483%2CPPE3394%2CLIMA_URB1_DIRECTO%2CPPE2511%2CIBIS_19%2CPPE1382%2CIBIS_3PL_83%2CPPE3248'
+
+        logger.info('Requesting politicalId')
+        res = session.get('https://www.falabella.com.pe/falabella-pe/category/cat760706/Celulares-y-Telefonos',
+                          headers={
+                              'User-Agent': fake_useragent.UserAgent().chrome,
+                              'Content-Type': 'application/json',
+                              'Accept': 'application/json, text/javascript, */*; q=0.01'
+                          })
+
+        res_html = bs4.BeautifulSoup(res.text, 'html.parser')
+        script_tag = res_html.find('script', {'id': '__NEXT_DATA__'})
+        script_tag_json = json.loads(script_tag.text)
+        political_ids = find_key_helper(script_tag_json, 'politicalId')
+        pid = political_ids[0]
+        logger.info(f'politicalId: {pid}')
 
         df = pd.DataFrame(columns=[
             'product_id',
@@ -38,7 +73,7 @@ def run_falabella():
 
         page = 1
         while True:
-            base_url = f"https://www.falabella.com.pe/s/browse/v1/listing/pe?sortBy={sort_by}&categoryId={category_id}&pgid={pg_id}&page={page}&categoryName={category_name}&zones={zones}"
+            base_url = f"https://www.falabella.com.pe/s/browse/v1/listing/pe?sortBy={sort_by}&categoryId={category_id}&pgid={pg_id}&page={page}&categoryName={category_name}&zones={zones}&pid={pid}"
             try:
                 res = session.get(base_url, headers={
                     'User-Agent': fake_useragent.UserAgent().chrome
@@ -58,7 +93,7 @@ def run_falabella():
                 product_id = result['productId']
                 sku_id = result['skuId']
                 url = result['url']
-                brand = result['brand']
+                brand = result['brand'].capitalize()
                 product_name = result['displayName']
 
                 medias_url = result['mediaUrls']
@@ -170,7 +205,7 @@ def run_entel():
             sku_id = attributes.get('sku', [''])[0]
             product_name = attributes.get('description', [''])[0]
             url = 'https://miportal.entel.pe' + attributes.get('seoUrl', ['seoUrl'])[0]
-            brand = attributes.get('product.brand', [''])[0]
+            brand = attributes.get('product.brand', [''])[0].capitalize()
             media_url = 'https://miportal.entel.pe' + attributes.get('productImage', [''])[0]
             price = float(attributes.get('sku.listPrice', [''])[0])
             event_price = float(attributes.get('product.listPrice', [''])[0])
