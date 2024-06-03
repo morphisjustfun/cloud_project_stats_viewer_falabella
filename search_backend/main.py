@@ -64,16 +64,20 @@ def register_general_routes(app, db):
             column('time'), column('price'), column('event_price'), column('cmr_price'), column('total_reviews'),
             column('rating')).select_from(text('products')).where(column('product_id') == bindparam('product_id'))
         df = pd.read_sql(stmt, db.engine, params={'product_id': product_id})
+        df.drop_duplicates(inplace=True)
         data = df.to_dict(orient='records')
-        provider = select(column('provider')).select_from(text('products')).where(
+        info_stmt = select(column('product_id'), column('sku_id'), column('product_name'), column('url'),
+                           column('brand'),
+                           column('media_url'), column('provider')).select_from(text('products')).where(
             column('product_id') == bindparam('product_id'))
-        provider_df = pd.read_sql(provider, db.engine, params={'product_id': product_id})
-        if provider_df.shape[0] == 0:
+        info_df = pd.read_sql(info_stmt, db.engine, params={'product_id': product_id})
+        info_df.drop_duplicates(inplace=True)
+        if info_df.shape[0] == 0:
             return Response(status=404, response=Utils.get_template_response_error(404, 'Not Found', '404',
-                                                                                  'No se encontró el producto'))
-        provider = provider_df.iloc[0, 0]
+                                                                                   'No se encontró el producto'))
+        info = info_df.to_dict(orient='records')[0]
         return Response(status=200, response=Utils.get_template_response_success({
-            'provider': provider,
+            'info': info,
             'history': data
         }), mimetype='application/json')
 

@@ -23,6 +23,7 @@ import {InstantSearch} from 'react-instantsearch';
 // Local Storage Operations
 import {getLocalSettings, setLocalSettings} from "./services/settingsOperations";
 import TypesenseInstantsearchAdapter from "typesense-instantsearch-adapter";
+import ProductPage from "./components/pages/ProductPage";
 
 const typesenseInstantsearchAdapter = new TypesenseInstantsearchAdapter({
     server: {
@@ -72,7 +73,7 @@ class App extends Component {
                     secondary: '#000000',
                 },
                 background: {
-                    // default: '#dedede',
+                    default: '#ffffff',
                 }
             },
             typography: {
@@ -93,10 +94,9 @@ class App extends Component {
                     <Router>
                         <AppBar/>
                         <Switch>
-                            <Route path={"/"} exact /*strict*/ component={HomePage}/>
-                            <Route path={"/test"} exact /*strict*/ component={TestPage}/>
-                            <Route path={"/settings"} exact /*strict*/ component={SettingsPage}/>
-                            <Route exact /*strict*/ component={NoPageFound}/>
+                            <Route path={"/"} exact component={HomePage}/>
+                            <Route path={"/product/:id"} render={(props) => <ProductPage {...props}/>}/>
+                            <Route exact component={NoPageFound}/>
                         </Switch>
                     </Router>
                 </MuiThemeProvider>

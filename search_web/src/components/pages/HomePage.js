@@ -13,29 +13,65 @@ import 'instantsearch.css/themes/satellite.css';
 // Action Imports
 import {setTest} from "../../actions/home-actions";
 import {Hits, SearchBox, Pagination, RefinementList, HitsPerPage, Highlight, Stats} from "react-instantsearch";
+import InsertLinkIcon from "@material-ui/icons/InsertLink";
+import TimelineIcon from "@material-ui/icons/Timeline";
+import Divider from "@material-ui/core/Divider";
+import {withRouter} from "react-router-dom";
 
-const hitComponent = ({hit}) => {
+const hitComponent = withRouter(({hit, history}) => {
     return (
         <div style={{
-            height: "18rem",
+            height: "20rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
         }}
         >
-            <img src={hit.media_url} alt={hit.product_name} style={{width: "100px", height: "200px"}}/>
-            <Typography variant="body1" color="textSecondary" style={{
-                cursor: "pointer",
-                textDecoration: "underline",
-            }} onClick={() => {
-                window.open(hit.url, "_blank");
+            <img src={hit.media_url} alt={hit.product_name}
+                 style={{width: "100px", height: "200px", marginBottom: "1em", objectFit: "contain"}}/>
+            <Typography align="center" variant="body1" color="textSecondary" style={{
+                display: "-webkit-box",
+                WebkitLineClamp: 1,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
             }}>
                 <Highlight hit={hit} attribute={"product_name"}/>
             </Typography>
-            <Typography variant="body2" color="textSecondary">
+            <Typography align="center" variant="body2" color="textSecondary" style={{
+                display: "-webkit-box",
+                WebkitLineClamp: 1,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+            }}>
                 {hit.brand}
             </Typography>
+            <div style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                marginTop: "1em",
+            }}>
+                <Fab color="primary" size="small" onClick={() => {
+                    window.open(hit.url, "_blank");
+                }}>
+                    <InsertLinkIcon/>
+                </Fab>
+                <Divider orientation="vertical" style={{margin: "0 0.5em"}}/>
+                <Fab color="primary" size="small" onClick={() => {
+                    history.push(`/product/${hit.product_id}`);
+                }}>
+                    <TimelineIcon/>
+                </Fab>
+            </div>
         </div>
     );
-
-}
+});
 
 class HomePage extends Component {
 

@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: upload-search
 spec:
-  schedule: "@daily"
+  schedule: "0 3 * * *"
   jobTemplate:
     spec:
       template:
