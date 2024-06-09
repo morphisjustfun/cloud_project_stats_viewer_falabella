@@ -7,18 +7,25 @@ import Fab from "@material-ui/core/Fab";
 import InsertLinkIcon from "@material-ui/icons/InsertLink";
 import {Card, Table, TableBody, TableCell, TableHead, TableRow, Paper} from "@material-ui/core";
 import {FlexibleXYPlot, XYPlot, XAxis, YAxis, VerticalGridLines, HorizontalGridLines, LineSeries} from 'react-vis';
+import Button from "@material-ui/core/Button";
 
 const ProductPage = (props) => {
     const {_, match: {params: {id}}} = props;
     const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    const fetchData = async () => {
+        setLoading(true);
+        const productInfo = await getProductByProductId(id)
+        setData(productInfo);
+        setLoading(false);
+    }
 
     useEffect(() => {
-        (async () => {
-            const productInfo = await getProductByProductId(id)
-            setData(productInfo);
-        })();
+        fetchData();
     }, []);
-    if (data === null) {
+
+    if (loading) {
         return (
             <div>
                 <Grid
@@ -37,6 +44,38 @@ const ProductPage = (props) => {
                         height: "90vh",
                     }}>
                         <CircularProgress/>
+                    </div>
+                </Grid>
+            </div>
+        );
+    }
+
+    if (data === null) {
+        return (
+            <div>
+                <Grid
+                    container
+                    spacing={0}
+                    direction="column"
+                    alignItems="center"
+                    justify="center"
+                    style={{minHeight: '90vh'}}
+                >
+                    <div style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "90vh",
+                    }}>
+                        <Typography variant="body1" gutterBottom style={{padding: "10px"}} color="textSecondary">
+                            There was an error fetching the data, please try again later.
+                        </Typography>
+                        <Button variant="contained" color="primary" onClick={() => {
+                            fetchData()
+                        }}>
+                            Retry
+                        </Button>
                     </div>
                 </Grid>
             </div>
