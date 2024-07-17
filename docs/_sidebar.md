@@ -4,3 +4,4 @@
 * [Artifact Registry y Cloud Build](artifact-registry-section.md)
 * [Monitoreo](monitoring.md)
 * [Escalamiento horizontal](hpa.md)
+* [Reportes de Jira](jira_reports.md)
